@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Lees de belangrijkste punten uit het laatste nieuws uit Nederland en de wereld."
+    />
+    <title>Nathan Nieuwsflits | Nieuws in een oogopslag</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Nathan Nieuwsflits, naar de homepage">
+        <span class="brand-mark">N.</span>
+        <span>Nathan Nieuwsflits</span>
+      </a>
+      <p class="header-caption">De wereld, helder samengevat.</p>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <p class="eyebrow">Laatste nieuws</p>
+        <h1 id="page-title">Blijf bij, zonder<br />alles te hoeven lezen.</h1>
+        <p class="intro">
+          De belangrijkste ontwikkelingen uit Nederland en de rest van de wereld, in enkele seconden.
+        </p>
+      </section>
+
+      <section class="news-section" aria-labelledby="news-heading">
+        <div class="section-top">
+          <div>
+            <h2 id="news-heading">Wat speelt er nu?</h2>
+            <p id="last-updated" class="last-updated" aria-live="polite"></p>
+          </div>
+          <button id="refresh-button" class="refresh-button" type="button">
+            <span aria-hidden="true">↻</span> Vernieuwen
+          </button>
+        </div>
+
+        <div class="filters" role="tablist" aria-label="Kies een nieuwssectie">
+          <button class="filter is-active" type="button" role="tab" aria-selected="true" data-section="netherlands">
+            Nederland
+          </button>
+          <button class="filter" type="button" role="tab" aria-selected="false" data-section="international">
+            Internationaal
+          </button>
+        </div>
+
+        <div id="news-content" aria-live="polite">
+          <div class="loading" role="status">
+            <span class="spinner" aria-hidden="true"></span>
+            Nieuws wordt opgehaald...
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>Nathan Nieuwsflits: nieuws van betrouwbare bronnen.</footer>
+    <script src="app.js"></script>
+  </body>
+</html>

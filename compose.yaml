@@ -1,0 +1,16 @@
+services:
+  news-app:
+    build: .
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:3000/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
