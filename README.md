@@ -37,6 +37,15 @@ docker compose down
 
 De standaardpoort is `3000`. Wijzig `PORT` in `.env` om zowel de app als de Docker-poortkoppeling op een andere poort te draaien.
 
+## Deployen op Vercel
+
+1. Push deze repository naar GitHub en importeer hem in [Vercel](https://vercel.com/new).
+2. Laat **Framework Preset** op `Other` staan. Er is geen build- of outputdirectory nodig.
+3. Voeg bij **Settings → Environment Variables** de variabele `GNEWS_API_KEY` toe met je GNews-sleutel.
+4. Klik op **Deploy**.
+
+`vercel.json` stuurt alle routes, inclusief `/`, naar de serverless Express-app. Daarmee wordt de fout `Cannot GET /` voorkomen.
+
 ## Nieuwsbronnen
 
 De server haalt artikelen op via de [GNews API](https://gnews.io/). De API-sleutel blijft op de server en wordt niet naar de browser gestuurd. De samenvatting wordt samengesteld uit de eerste een of twee zinnen van de artikelbeschrijving die de nieuwsbron aanlevert.

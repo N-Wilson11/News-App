@@ -1,12 +1,15 @@
 import "dotenv/config";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
 import express from "express";
 
 const app = express();
 const port = process.env.PORT || 3000;
 const gnewsApiKey = process.env.GNEWS_API_KEY;
 const validSections = new Set(["netherlands", "international"]);
+const projectDirectory = path.dirname(fileURLToPath(import.meta.url));
 
-app.use(express.static("public"));
+app.use(express.static(path.join(projectDirectory, "public")));
 
 app.get("/api/news", async (request, response) => {
   const section = request.query.section || "netherlands";
@@ -70,6 +73,10 @@ function createSummary(description, content) {
     .slice(0, 2);
 }
 
-app.listen(port, () => {
-  console.log(`Nieuws-app draait op http://localhost:${port}`);
-});
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  app.listen(port, () => {
+    console.log(`Nieuws-app draait op http://localhost:${port}`);
+  });
+}
+
+export default app;
