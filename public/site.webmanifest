@@ -1,0 +1,17 @@
+{
+  "name": "Nathan Nieuwsflits",
+  "short_name": "Nieuwsflits",
+  "description": "Het laatste nieuws uit Nederland en de wereld.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1d5b45",
+  "theme_color": "#1d5b45",
+  "icons": [
+    {
+      "src": "app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
