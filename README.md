@@ -1,50 +1,9 @@
 # Nathan Nieuwsflits
 
 Een Node.js-nieuwsapp die recente artikelen uit Nederland en de wereld toont. Elk artikel bevat een afbeelding, bron, compacte samenvatting en een link naar het oorspronkelijke bericht.
-
-## Installeren en starten
-
-1. Maak gratis een API-sleutel aan via [GNews](https://gnews.io/).
-2. Kopieer `.env.example` naar `.env` en vul `GNEWS_API_KEY` in.
-3. Installeer de afhankelijkheden:
-
-   ```bash
-   npm install
-   ```
-
-4. Start de app:
-
-   ```bash
-   npm start
-   ```
-
-Open daarna [http://localhost:3000](http://localhost:3000).
-
-## Docker
-
-1. Kopieer `.env.example` naar `.env` en vul `GNEWS_API_KEY` in.
-2. Bouw en start de container:
-
-   ```bash
-   docker compose up --build -d
-   ```
-
-Open daarna [http://localhost:3000](http://localhost:3000). Stop de app weer met:
-
-```bash
-docker compose down
-```
-
-De standaardpoort is `3000`. Wijzig `PORT` in `.env` om zowel de app als de Docker-poortkoppeling op een andere poort te draaien.
-
-## Deployen op Vercel
-
-1. Push deze repository naar GitHub en importeer hem in [Vercel](https://vercel.com/new).
-2. Laat **Framework Preset** op `Other` staan. Er is geen build- of outputdirectory nodig.
-3. Voeg bij **Settings → Environment Variables** de variabele `GNEWS_API_KEY` toe met je GNews-sleutel.
-4. Klik op **Deploy**.
-
-`vercel.json` stuurt alle routes, inclusief `/`, naar de serverless Express-app. Daarmee wordt de fout `Cannot GET /` voorkomen.
+Dit is de link naar de website: https://nathan-nieuwsflits.vercel.app/
+<br>
+De website is te downloaden als PWA.
 
 ## Nieuwsbronnen
 
