@@ -28,7 +28,7 @@ app.get("/api/news", async (request, response) => {
     q: section === "netherlands" ? "nieuws" : "world",
     lang: section === "netherlands" ? "nl" : "en",
     country: section === "netherlands" ? "nl" : "us",
-    max: "12",
+    max: "25",
     apikey: gnewsApiKey
   });
 
@@ -44,7 +44,7 @@ app.get("/api/news", async (request, response) => {
     }
 
     const data = await apiResponse.json();
-    const articles = (data.articles || []).map((article) => ({
+    const articles = removeDuplicates(data.articles || []).slice(0, 12).map((article) => ({
       title: article.title,
       summary: createSummary(article.description, article.content),
       image: article.image,
@@ -62,6 +62,68 @@ app.get("/api/news", async (request, response) => {
     });
   }
 });
+
+// Persbureauberichten (zoals ANP) verschijnen op veel sites tegelijk, soms met een
+// iets andere kop. Een artikel geldt als dubbel bij dezelfde URL of een kop die
+// grotendeels uit dezelfde woorden bestaat als een eerder artikel.
+function removeDuplicates(articles) {
+  const seenUrls = new Set();
+  const seenTitles = [];
+
+  return articles.filter((article) => {
+    const url = normalizeUrl(article.url);
+    const words = titleWords(article.title);
+
+    if (url && seenUrls.has(url)) {
+      return false;
+    }
+
+    if (seenTitles.some((seenWords) => isSimilar(words, seenWords))) {
+      return false;
+    }
+
+    if (url) {
+      seenUrls.add(url);
+    }
+    seenTitles.push(words);
+    return true;
+  });
+}
+
+function normalizeUrl(value) {
+  try {
+    const url = new URL(value);
+    return `${url.hostname.replace(/^www\./, "")}${url.pathname.replace(/\/$/, "")}`;
+  } catch {
+    return null;
+  }
+}
+
+function titleWords(title = "") {
+  const normalized = title
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    // Sites zetten hun eigen naam vaak achter de kop, bijvoorbeeld "... | NU.nl".
+    .replace(/\s+[|\-–—]\s+[^|\-–—]+$/, "");
+
+  return new Set(normalized.match(/[\p{L}\p{N}]{3,}/gu) || []);
+}
+
+function isSimilar(wordsA, wordsB) {
+  if (!wordsA.size || !wordsB.size) {
+    return false;
+  }
+
+  let shared = 0;
+  wordsA.forEach((word) => {
+    if (wordsB.has(word)) {
+      shared += 1;
+    }
+  });
+
+  return shared / Math.min(wordsA.size, wordsB.size) >= 0.7;
+}
 
 function createSummary(description, content) {
   const text = description || content || "Voor dit artikel is nog geen samenvatting beschikbaar.";
