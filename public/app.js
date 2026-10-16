@@ -2,6 +2,8 @@ const content = document.querySelector("#news-content");
 const filters = document.querySelectorAll(".filter");
 const refreshButton = document.querySelector("#refresh-button");
 const lastUpdated = document.querySelector("#last-updated");
+const locationSearch = document.querySelector("#location-search");
+const locationInput = document.querySelector("#location-input");
 let activeSection = "netherlands";
 
 async function loadNews() {
@@ -14,7 +16,14 @@ async function loadNews() {
   refreshButton.disabled = true;
 
   try {
-    const response = await fetch(`/api/news?section=${activeSection}`);
+    const parameters = new URLSearchParams({ section: activeSection });
+    const location = locationInput.value.trim();
+
+    if (location) {
+      parameters.set("location", location);
+    }
+
+    const response = await fetch(`/api/news?${parameters}`);
     const data = await response.json();
 
     if (!response.ok) {
@@ -124,4 +133,8 @@ filters.forEach((filter) => {
 });
 
 refreshButton.addEventListener("click", loadNews);
+locationSearch.addEventListener("submit", (event) => {
+  event.preventDefault();
+  loadNews();
+});
 loadNews();
