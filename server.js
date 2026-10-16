@@ -15,9 +15,14 @@ app.use(express.static(path.join(projectDirectory, "public")));
 app.get("/api/news", async (request, response) => {
   const section = request.query.section || "netherlands";
   const location = typeof request.query.location === "string" ? request.query.location.trim() : "";
+  const page = parsePage(request.query.page);
 
   if (!validSections.has(section)) {
     return response.status(400).json({ error: "Onbekende nieuwssectie." });
+  }
+
+  if (!page) {
+    return response.status(400).json({ error: "Voer een geldig paginanummer in." });
   }
 
   if (location.length > maximumLocationLength) {
@@ -33,10 +38,14 @@ app.get("/api/news", async (request, response) => {
   const parameters = new URLSearchParams({
     q: location || (section === "netherlands" ? "nieuws" : "world"),
     lang: section === "netherlands" ? "nl" : "en",
-    country: section === "netherlands" ? "nl" : "us",
     max: "25",
+    page: String(page),
     apikey: gnewsApiKey
   });
+
+  if (section === "netherlands") {
+    parameters.set("country", "nl");
+  }
 
   try {
     const apiResponse = await fetch(`https://gnews.io/api/v4/search?${parameters}`);
@@ -50,7 +59,8 @@ app.get("/api/news", async (request, response) => {
     }
 
     const data = await apiResponse.json();
-    const articles = removeDuplicates(data.articles || []).slice(0, 12).map((article) => ({
+    const sourceArticles = data.articles || [];
+    const articles = removeDuplicates(sourceArticles).slice(0, 25).map((article) => ({
       title: article.title,
       summary: createSummary(article.description, article.content),
       image: article.image,
@@ -60,7 +70,17 @@ app.get("/api/news", async (request, response) => {
       publishedAt: article.publishedAt
     }));
 
-    return response.json({ articles, updatedAt: new Date().toISOString() });
+    const totalArticles = Number.isInteger(data.totalArticles) ? data.totalArticles : articles.length;
+
+    return response.json({
+      articles,
+      pagination: {
+        page,
+        pageSize: sourceArticles.length,
+        totalArticles
+      },
+      updatedAt: new Date().toISOString()
+    });
   } catch (error) {
     console.error("GNews API is niet bereikbaar:", error);
     return response.status(502).json({
@@ -68,6 +88,19 @@ app.get("/api/news", async (request, response) => {
     });
   }
 });
+
+function parsePage(value) {
+  if (value === undefined) {
+    return 1;
+  }
+
+  if (typeof value !== "string" || !/^[1-9]\d*$/.test(value)) {
+    return null;
+  }
+
+  const page = Number(value);
+  return Number.isSafeInteger(page) ? page : null;
+}
 
 // Persbureauberichten (zoals ANP) verschijnen op veel sites tegelijk, soms met een
 // iets andere kop. Een artikel geldt als dubbel bij dezelfde URL of een kop die

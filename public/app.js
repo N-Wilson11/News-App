@@ -4,7 +4,13 @@ const refreshButton = document.querySelector("#refresh-button");
 const lastUpdated = document.querySelector("#last-updated");
 const locationSearch = document.querySelector("#location-search");
 const locationInput = document.querySelector("#location-input");
+const pagination = document.querySelector("#pagination");
+const previousPageButton = document.querySelector("#previous-page");
+const nextPageButton = document.querySelector("#next-page");
+const pageStatus = document.querySelector("#page-status");
 let activeSection = "netherlands";
+let currentPage = 1;
+let resultsPerPage = 25;
 
 async function loadNews() {
   content.innerHTML = `
@@ -14,9 +20,13 @@ async function loadNews() {
     </div>
   `;
   refreshButton.disabled = true;
+  pagination.hidden = true;
 
   try {
-    const parameters = new URLSearchParams({ section: activeSection });
+    const parameters = new URLSearchParams({
+      section: activeSection,
+      page: String(currentPage)
+    });
     const location = locationInput.value.trim();
 
     if (location) {
@@ -31,6 +41,7 @@ async function loadNews() {
     }
 
     renderArticles(data.articles);
+    renderPagination(data.pagination);
     lastUpdated.textContent = `Bijgewerkt ${formatTime(data.updatedAt)}`;
   } catch (error) {
     content.innerHTML = `
@@ -46,6 +57,17 @@ async function loadNews() {
   }
 }
 
+function renderPagination({ page, pageSize, totalArticles }) {
+  if (page === 1 && pageSize) {
+    resultsPerPage = pageSize;
+  }
+
+  pagination.hidden = false;
+  previousPageButton.disabled = page === 1;
+  nextPageButton.disabled = page * resultsPerPage >= totalArticles;
+  pageStatus.textContent = `Pagina ${page}`;
+}
+
 function renderArticles(articles) {
   if (!articles.length) {
     content.innerHTML = '<p class="empty-message">Er zijn momenteel geen artikelen gevonden.</p>';
@@ -53,12 +75,21 @@ function renderArticles(articles) {
   }
 
   content.innerHTML = `<div class="article-grid">${articles.map(renderArticle).join("")}</div>`;
+  content.querySelectorAll(".article-image img").forEach((image) => {
+    image.addEventListener("error", () => {
+      const placeholder = document.createElement("div");
+      placeholder.className = "image-placeholder";
+      placeholder.setAttribute("aria-hidden", "true");
+      placeholder.innerHTML = newspaperPlaceholder();
+      image.replaceWith(placeholder);
+    });
+  });
 }
 
 function renderArticle(article) {
-  const image = article.image
-    ? `<img src="${safeUrl(article.image)}" alt="" loading="lazy" />`
-    : '<div class="image-placeholder" aria-hidden="true">A.</div>';
+  const image = article.image && !isBlockedImageHost(article.image)
+    ? `<img src="${safeUrl(article.image)}" alt="" loading="lazy" referrerpolicy="no-referrer" />`
+    : `<div class="image-placeholder" aria-hidden="true">${newspaperPlaceholder()}</div>`;
   const summary = article.summary.map((point) => `<li>${escapeHtml(point)}</li>`).join("");
   const sourceLink = article.sourceUrl
     ? `<a href="${safeUrl(article.sourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(article.source)}</a>`
@@ -120,9 +151,24 @@ function safeUrl(value) {
   }
 }
 
+function isBlockedImageHost(value) {
+  try {
+    const { hostname } = new URL(value);
+    return hostname === "beaconjournal.com" || hostname.endsWith(".beaconjournal.com");
+  } catch {
+    return false;
+  }
+}
+
+function newspaperPlaceholder() {
+  return '<div class="newspaper"><span class="newspaper-title">Nieuws</span><span class="newspaper-lines"></span></div>';
+}
+
 filters.forEach((filter) => {
   filter.addEventListener("click", () => {
     activeSection = filter.dataset.section;
+    currentPage = 1;
+    resultsPerPage = 25;
     filters.forEach((button) => {
       const isActive = button === filter;
       button.classList.toggle("is-active", isActive);
@@ -135,6 +181,16 @@ filters.forEach((filter) => {
 refreshButton.addEventListener("click", loadNews);
 locationSearch.addEventListener("submit", (event) => {
   event.preventDefault();
+  currentPage = 1;
+  resultsPerPage = 25;
+  loadNews();
+});
+previousPageButton.addEventListener("click", () => {
+  currentPage -= 1;
+  loadNews();
+});
+nextPageButton.addEventListener("click", () => {
+  currentPage += 1;
   loadNews();
 });
 loadNews();

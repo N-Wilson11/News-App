@@ -211,6 +211,37 @@ h2 {
   cursor: pointer;
 }
 
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 32px;
+}
+
+.pagination button {
+  padding: 10px 15px;
+  color: var(--green);
+  background: #fff;
+  border: 1px solid var(--green);
+  border-radius: 7px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.pagination span {
+  min-width: 76px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
 .article-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -245,10 +276,42 @@ h2 {
   min-height: 150px;
   display: grid;
   place-items: center;
-  color: var(--green);
   background: var(--pale-green);
+}
+
+.newspaper {
+  width: 92px;
+  height: 112px;
+  padding: 13px 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #fff;
+  border: 2px solid var(--green);
+  box-shadow: 5px 5px 0 rgba(29, 91, 69, 0.2);
+  transform: rotate(-4deg);
+}
+
+.newspaper-title {
+  padding-bottom: 6px;
+  color: var(--green);
+  border-bottom: 2px solid var(--green);
   font-family: "Playfair Display", serif;
-  font-size: 3rem;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.newspaper-lines {
+  flex: 1;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--line) 0,
+    var(--line) 3px,
+    transparent 3px,
+    transparent 8px
+  );
 }
 
 .article-body {
