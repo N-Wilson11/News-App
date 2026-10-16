@@ -4,7 +4,13 @@ const refreshButton = document.querySelector("#refresh-button");
 const lastUpdated = document.querySelector("#last-updated");
 const locationSearch = document.querySelector("#location-search");
 const locationInput = document.querySelector("#location-input");
+const pagination = document.querySelector("#pagination");
+const previousPageButton = document.querySelector("#previous-page");
+const nextPageButton = document.querySelector("#next-page");
+const pageStatus = document.querySelector("#page-status");
 let activeSection = "netherlands";
+let currentPage = 1;
+let resultsPerPage = 25;
 
 async function loadNews() {
   content.innerHTML = `
@@ -14,9 +20,13 @@ async function loadNews() {
     </div>
   `;
   refreshButton.disabled = true;
+  pagination.hidden = true;
 
   try {
-    const parameters = new URLSearchParams({ section: activeSection });
+    const parameters = new URLSearchParams({
+      section: activeSection,
+      page: String(currentPage)
+    });
     const location = locationInput.value.trim();
 
     if (location) {
@@ -31,6 +41,7 @@ async function loadNews() {
     }
 
     renderArticles(data.articles);
+    renderPagination(data.pagination);
     lastUpdated.textContent = `Bijgewerkt ${formatTime(data.updatedAt)}`;
   } catch (error) {
     content.innerHTML = `
@@ -44,6 +55,17 @@ async function loadNews() {
   } finally {
     refreshButton.disabled = false;
   }
+}
+
+function renderPagination({ page, pageSize, totalArticles }) {
+  if (page === 1 && pageSize) {
+    resultsPerPage = pageSize;
+  }
+
+  pagination.hidden = false;
+  previousPageButton.disabled = page === 1;
+  nextPageButton.disabled = page * resultsPerPage >= totalArticles;
+  pageStatus.textContent = `Pagina ${page}`;
 }
 
 function renderArticles(articles) {
@@ -123,6 +145,8 @@ function safeUrl(value) {
 filters.forEach((filter) => {
   filter.addEventListener("click", () => {
     activeSection = filter.dataset.section;
+    currentPage = 1;
+    resultsPerPage = 25;
     filters.forEach((button) => {
       const isActive = button === filter;
       button.classList.toggle("is-active", isActive);
@@ -135,6 +159,16 @@ filters.forEach((filter) => {
 refreshButton.addEventListener("click", loadNews);
 locationSearch.addEventListener("submit", (event) => {
   event.preventDefault();
+  currentPage = 1;
+  resultsPerPage = 25;
+  loadNews();
+});
+previousPageButton.addEventListener("click", () => {
+  currentPage -= 1;
+  loadNews();
+});
+nextPageButton.addEventListener("click", () => {
+  currentPage += 1;
   loadNews();
 });
 loadNews();
