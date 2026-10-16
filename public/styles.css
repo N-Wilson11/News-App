@@ -147,7 +147,7 @@ h2 {
 .filters {
   display: flex;
   gap: 8px;
-  margin: 32px 0 28px;
+  margin: 32px 0 16px;
 }
 
 .filter {
@@ -164,6 +164,51 @@ h2 {
   color: #fff;
   background: var(--green);
   border-color: var(--green);
+}
+
+.location-search {
+  max-width: 540px;
+  margin: 0 0 28px;
+}
+
+.location-search label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.location-search-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.location-search input {
+  min-width: 0;
+  flex: 1;
+  padding: 10px 13px;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  font: inherit;
+}
+
+.location-search input:focus {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+
+.location-search button {
+  padding: 10px 17px;
+  color: #fff;
+  background: var(--green);
+  border: 0;
+  border-radius: 7px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .article-grid {
@@ -345,6 +390,10 @@ footer {
   .article-grid {
     grid-template-columns: 1fr;
   }
+
+  .location-search {
+    max-width: none;
+  }
 }
 
 @media (max-width: 430px) {
@@ -359,5 +408,9 @@ footer {
 
   .article-image {
     height: 190px;
+  }
+
+  .location-search-controls {
+    flex-direction: column;
   }
 }

@@ -57,6 +57,21 @@
           </button>
         </div>
 
+        <form id="location-search" class="location-search">
+          <label for="location-input">Nieuws zoeken op plaats of stad</label>
+          <div class="location-search-controls">
+            <input
+              id="location-input"
+              name="location"
+              type="search"
+              maxlength="80"
+              placeholder="Bijvoorbeeld: Amsterdam"
+              autocomplete="address-level2"
+            />
+            <button type="submit">Zoeken</button>
+          </div>
+        </form>
+
         <div id="news-content" aria-live="polite">
           <div class="loading" role="status">
             <span class="spinner" aria-hidden="true"></span>

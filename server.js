@@ -7,15 +7,21 @@ const app = express();
 const port = process.env.PORT || 3000;
 const gnewsApiKey = process.env.GNEWS_API_KEY;
 const validSections = new Set(["netherlands", "international"]);
+const maximumLocationLength = 80;
 const projectDirectory = path.dirname(fileURLToPath(import.meta.url));
 
 app.use(express.static(path.join(projectDirectory, "public")));
 
 app.get("/api/news", async (request, response) => {
   const section = request.query.section || "netherlands";
+  const location = typeof request.query.location === "string" ? request.query.location.trim() : "";
 
   if (!validSections.has(section)) {
     return response.status(400).json({ error: "Onbekende nieuwssectie." });
+  }
+
+  if (location.length > maximumLocationLength) {
+    return response.status(400).json({ error: "Voer een plaatsnaam van maximaal 80 tekens in." });
   }
 
   if (!gnewsApiKey) {
@@ -25,7 +31,7 @@ app.get("/api/news", async (request, response) => {
   }
 
   const parameters = new URLSearchParams({
-    q: section === "netherlands" ? "nieuws" : "world",
+    q: location || (section === "netherlands" ? "nieuws" : "world"),
     lang: section === "netherlands" ? "nl" : "en",
     country: section === "netherlands" ? "nl" : "us",
     max: "25",
