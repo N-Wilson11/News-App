@@ -276,10 +276,42 @@ h2 {
   min-height: 150px;
   display: grid;
   place-items: center;
-  color: var(--green);
   background: var(--pale-green);
+}
+
+.newspaper {
+  width: 92px;
+  height: 112px;
+  padding: 13px 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #fff;
+  border: 2px solid var(--green);
+  box-shadow: 5px 5px 0 rgba(29, 91, 69, 0.2);
+  transform: rotate(-4deg);
+}
+
+.newspaper-title {
+  padding-bottom: 6px;
+  color: var(--green);
+  border-bottom: 2px solid var(--green);
   font-family: "Playfair Display", serif;
-  font-size: 3rem;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.newspaper-lines {
+  flex: 1;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--line) 0,
+    var(--line) 3px,
+    transparent 3px,
+    transparent 8px
+  );
 }
 
 .article-body {

@@ -38,11 +38,14 @@ app.get("/api/news", async (request, response) => {
   const parameters = new URLSearchParams({
     q: location || (section === "netherlands" ? "nieuws" : "world"),
     lang: section === "netherlands" ? "nl" : "en",
-    country: section === "netherlands" ? "nl" : "us",
     max: "25",
     page: String(page),
     apikey: gnewsApiKey
   });
+
+  if (section === "netherlands") {
+    parameters.set("country", "nl");
+  }
 
   try {
     const apiResponse = await fetch(`https://gnews.io/api/v4/search?${parameters}`);

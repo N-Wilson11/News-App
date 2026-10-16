@@ -75,12 +75,21 @@ function renderArticles(articles) {
   }
 
   content.innerHTML = `<div class="article-grid">${articles.map(renderArticle).join("")}</div>`;
+  content.querySelectorAll(".article-image img").forEach((image) => {
+    image.addEventListener("error", () => {
+      const placeholder = document.createElement("div");
+      placeholder.className = "image-placeholder";
+      placeholder.setAttribute("aria-hidden", "true");
+      placeholder.innerHTML = newspaperPlaceholder();
+      image.replaceWith(placeholder);
+    });
+  });
 }
 
 function renderArticle(article) {
-  const image = article.image
-    ? `<img src="${safeUrl(article.image)}" alt="" loading="lazy" />`
-    : '<div class="image-placeholder" aria-hidden="true">A.</div>';
+  const image = article.image && !isBlockedImageHost(article.image)
+    ? `<img src="${safeUrl(article.image)}" alt="" loading="lazy" referrerpolicy="no-referrer" />`
+    : `<div class="image-placeholder" aria-hidden="true">${newspaperPlaceholder()}</div>`;
   const summary = article.summary.map((point) => `<li>${escapeHtml(point)}</li>`).join("");
   const sourceLink = article.sourceUrl
     ? `<a href="${safeUrl(article.sourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(article.source)}</a>`
@@ -140,6 +149,19 @@ function safeUrl(value) {
   } catch {
     return "#";
   }
+}
+
+function isBlockedImageHost(value) {
+  try {
+    const { hostname } = new URL(value);
+    return hostname === "beaconjournal.com" || hostname.endsWith(".beaconjournal.com");
+  } catch {
+    return false;
+  }
+}
+
+function newspaperPlaceholder() {
+  return '<div class="newspaper"><span class="newspaper-title">Nieuws</span><span class="newspaper-lines"></span></div>';
 }
 
 filters.forEach((filter) => {
